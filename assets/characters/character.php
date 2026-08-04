@@ -1,5 +1,5 @@
 <?php
-require_once "./interfaces/hittable.php";
+require_once __dir__."/../interfaces/hittable.php";
 abstract class Character implements Hittable{
     protected $hp;
     protected $maxHp;
@@ -9,24 +9,20 @@ abstract class Character implements Hittable{
     protected $defense;
     protected $initiative;
     protected array $inventory;
-    protected $level = 1;
+    protected $level;
 
-    public function __construct($mHp, $hp, $maxEP, $ep, $att, $def, $ini){
+    public function __construct($mHp, $maxEP, $att, $def, $ini){
         $this->setMaxHp($mHp);
-        $this->setHp($hp);
+        $this->setHp($mHp);
         $this->setMaxEnergyPoints($maxEP);
-        $this->setEnergyPoints($ep);
+        $this->setEnergyPoints($maxEP);
         $this->setAttack($att);
         $this->setDefense($def);
         $this->setInitiative($ini);
+        $this->setLevel(1);
     }
 
-    public function LevelUp($lup, $attUp, $defUp, $epUp){
-        $this->level += $lup;
-        $this->attack += $attUp;
-        $this->defense += $defUp;
-        $this->maxEnergyPoints += $epUp;
-    }
+    public abstract function LevelUp();
 
     public function isAlive(){
         return $this->hp > 0;
@@ -52,9 +48,13 @@ abstract class Character implements Hittable{
         $this->defense += $v;
     }
 
-    public function RecieveDamage(Character $attacker){
-        $attackerDmg = max(0, $attacker->attack - $this->defense);
-        $this->hp = max(0, $attackerDmg);
+    public function LoseEnergy($energy){
+        $this->energyPoints -= $energy;
+    }
+
+    public function RecieveDamage(float $dmg){
+        $attackerDmg = max(0, $dmg - $this->defense);
+        $this->hp = max(0, $this->hp - $attackerDmg);
     }
 
     public function Attack(Character $target){
@@ -123,7 +123,7 @@ abstract class Character implements Hittable{
     }
 
     public function setInventory($inventory){
-        $this->inventory = $inventory;
+        $this->inventory[-1] = $inventory;
         
     }
 
@@ -137,5 +137,13 @@ abstract class Character implements Hittable{
 
     public function setInitiative($initiative){
         $this->initiative = $initiative;
+    }
+
+    /**
+     * Set the value of level
+     */
+    public function setLevel($level): self {
+        $this->level = $level;
+        return $this;
     }
 }

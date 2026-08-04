@@ -1,13 +1,20 @@
 <?php
-require_once "./interfaces/usable.php";
+require_once "interfaces/usable.php";
 
 class Item implements Usable{
     private $name;
-    private $buff_type;
+    private $buffType;
     private $value;
 
+
+    public function __construct($n, $bty, $v){
+        $this->setName($n);
+        $this->setBuffType($bty);
+        $this->setValue($v);
+    }
+    
     public function useItem(Character $target){
-        switch($this->buff_type){
+        switch($this->buffType){
             case "Heal":
                 $target->Heal($this->value);
                 break;
@@ -41,17 +48,17 @@ class Item implements Usable{
     }
 
     /**
-     * Get the value of buff_type
+     * Get the value of buffType
      */
     public function getBuffType() {
-        return $this->buff_type;
+        return $this->buffType;
     }
 
     /**
-     * Set the value of buff_type
+     * Set the value of buffType
      */
-    public function setBuffType($buff_type): self {
-        $this->buff_type = $buff_type;
+    public function setBuffType($buffType): self {
+        $this->buffType = $buffType;
         return $this;
     }
 
