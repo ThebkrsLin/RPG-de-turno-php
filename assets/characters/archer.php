@@ -4,9 +4,9 @@ require_once "character.php";
 class Archer extends Character{
     private $name;
 
-    public function __construct($mHp, $maxEP, $att, $def, $ini, $n)
+    public function __construct($n)
     {
-        parent::__construct($mHp, $maxEP, $att, $def, $ini);
+        parent::__construct(95, 45, 16, 9, 20);
         $this->setName($n);
     }
 
@@ -26,6 +26,7 @@ class Archer extends Character{
         $this->attack += 5;
         $this->maxEnergyPoints += 4;
         $this->initiative += 2;
+        $this->level += 1;
     }
     /**
      * Get the value of name

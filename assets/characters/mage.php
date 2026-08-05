@@ -4,9 +4,9 @@ require_once "character.php";
 class Mage extends Character{
     private $name;
     
-    public function __construct($mHp, $maxEP, $att, $def, $ini, $n)
+    public function __construct($n)
     {
-        parent::__construct($mHp, $maxEP, $att, $def, $ini);
+        parent::__construct(80, 60, 10, 6, 16);
         $this->setName($n);
     }
 
@@ -26,6 +26,7 @@ class Mage extends Character{
         $this->attack += 4; 
         $this->maxEnergyPoints += 8;
         $this->initiative += 1;
+        $this->level += 1;
     }
 
 

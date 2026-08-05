@@ -32,8 +32,12 @@ abstract class Character implements Hittable{
 
     protected function canAct(){
         if(!$this->isAlive()){
-            throw new Exception("O Personagem Foi derrotado, não poderá agir!1");
+            #throw new Exception("O Personagem Foi derrotado, não poderá agir!!!");
+            echo "O Personagem Foi derrotado, não poderá agir!!!";
+            return false;
         }
+        return true;
+        
     }
 
     public function Heal($v){
@@ -58,8 +62,17 @@ abstract class Character implements Hittable{
     }
 
     public function Attack(Character $target){
-        $this->canAct();
-        $target->RecieveDamage($this->attack);
+        if($this->canAct()){
+            $target->RecieveDamage($this->attack);
+        }
+    }
+
+    public function addItem($item){
+        $this->inventory[$item->getName()] = $item;        
+    }
+
+    public function removeItem($item){
+        unset($this->inventory[$item]);
     }
 
     // Access Functions
@@ -120,11 +133,6 @@ abstract class Character implements Hittable{
 
     public function getInventory(){
         return $this->inventory;
-    }
-
-    public function setInventory($inventory){
-        $this->inventory[-1] = $inventory;
-        
     }
 
     public function getLevel(){

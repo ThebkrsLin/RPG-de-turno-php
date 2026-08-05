@@ -4,9 +4,9 @@ require_once "character.php";
 class Warrior extends Character{
     private $name;
 
-    public function __construct($mHp, $maxEP, $att, $def, $ini, $n)
+    public function __construct($n)
     {
-        parent::__construct($mHp, $maxEP, $att, $def, $ini);
+        parent::__construct(120, 30, 18, 15, 9);
         $this->setName($n);
     }
 
@@ -29,6 +29,7 @@ class Warrior extends Character{
         $this->attack += 2;
         $this->maxEnergyPoints += 2;
         $this->initiative += 1;
+        $this->level += 1;
     }
 
 
