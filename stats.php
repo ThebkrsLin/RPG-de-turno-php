@@ -11,8 +11,9 @@
         require_once "./assets/characters/mage.php";
         require_once "./assets/characters/warrior.php";
         require_once "./assets/characters/archer.php";
-        require_once "./assets/CPU.php";
+        require_once "./assets/manage/CPU.php";
         require_once "./assets/item.php";
+        require_once "./assets/manage/battle.php";
 
 
         $charName = $_POST["charName"];
@@ -23,6 +24,7 @@
         $player = null;
         $enemy = null;
         $CPU = new CPU();
+        $battle = new Battle();
 
         switch($charClass){
             case "Warrior":
@@ -50,16 +52,24 @@
             case 3:
                 $enemy = new Archer("(CPU)");
         }
+        $battle->addFighters($player, $enemy);
+        $battle->start();
 
         $player->addItem($item);
-        $player->addItem($item2); 
-        $CPU->decideAction($enemy, $player, 2);
+        $player->addItem($item2);
+        $CPU->decideAction($enemy, $player);
         #$item->useItem($player);
-        $CPU->GrindCPU($player);
+
+        if($player->getLevel() > $enemy->getLevel()){
+            $CPU->GrindCPU($enemy, $player);
+        }
+
         echo "<pre>";
         print_r($player);
         echo "<br>";
         print_r($enemy);
+        echo "<br>";
+        print_r($battle);
         echo "</pre><br>";
         ?><br>
         <a href="javascript:history.go(-1)">Voltar</a>

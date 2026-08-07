@@ -16,11 +16,14 @@ class Warrior extends Character{
         $this->canAct();
         $r = 15;
         if($this->energyPoints < $r){
-            throw new Exception("Você está sem energia, não poderá usar a habilidade");
+            echo $this->name." está sem energia, não poderá usar a habilidade<br>";
+            return false;
         }
-
-        $this->energyPoints -= $r;
-        $target->RecieveDamage($this->attack * 1.8);
+        
+        else{   
+            $this->energyPoints -= $r;
+            $target->RecieveDamage($this->attack * 1.8);
+        }
     }
 
     public function LevelUp(){

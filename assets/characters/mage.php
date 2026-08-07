@@ -14,10 +14,14 @@ class Mage extends Character{
         $this->canAct();
         $r = 20;
         if($this->energyPoints < $r){
-            throw new Exception("Você está sem energia, não poderá usar a habilidade!!!");
+           echo $this->name." está sem energia, não poderá usar a habilidade";
+           return false;
         }
-        $this->energyPoints -= $r;
-        $target->RecieveDamage($this->getAttack() * 2.5);
+        
+        else{   
+            $this->energyPoints -= $r;
+            $target->RecieveDamage($this->attack * 1.8);
+        }
     }
 
     public function LevelUP(){

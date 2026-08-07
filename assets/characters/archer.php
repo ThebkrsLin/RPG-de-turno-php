@@ -14,10 +14,14 @@ class Archer extends Character{
         $this->canAct();
         $r = 10;
         if($this->energyPoints < $r){
-            throw new Exception("Você não possui energia, não poderá usar a habilidade!!");
+            echo $this->name." está sem energia, não poderá usar a habilidade";
+            return false;
         }
-        $this->energyPoints -= $r;
-        $target->RecieveDamage($this->getAttack() * 1.4);
+        
+        else{   
+            $this->energyPoints -= $r;
+            $target->RecieveDamage($this->attack * 1.8);
+        }
     }
 
     public function LevelUp(){
