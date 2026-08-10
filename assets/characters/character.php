@@ -34,7 +34,6 @@ abstract class Character implements Hittable{
         if(!$this->isAlive()){
             #throw new Exception("O Personagem Foi derrotado, não poderá agir!!!");
             echo "O Personagem Foi derrotado, não poderá agir!!!";
-            return false;
         }
         return true;
         

@@ -1,23 +1,87 @@
 <?php
 require_once "battelog.php";
+require_once "player.php";
+require_once "CPU.php";
 class Battle{
     private array $fighters;
-    private $log;
+    private array $controllers;
+
+    private Battlelog $log;
     private array $order;
+    private int $turnIndex;
     private int $turnCount;
     private int $maxTurn = 50;
 
 
     public function __construct(){
-        $this->log = new Battelog();
+        $this->log = new Battlelog();
         $this->setTurnCount(0);
+        $this->turnIndex = 0;
+        $this->controllers = [];
     }
 
     public function addFighters(Character $player, Character $cpu){
         $this->fighters = ['player' => $player, 'cpu' => $cpu];
+        $this->controllers = [
+            spl_object_id($player) => new Player(),
+            spl_object_id($cpu) => new CPU()
+        ];
         $this->setOrder();
     }
 
+    public function getCurrentFighter(): Character{
+        return $this->order[$this->turnIndex % 2];
+    }
+
+    public function getOponnent(Character $current): Character{
+        return $current === $this->fighters['player'] ? $this->fighters['cpu'] : $this->fighters['player'];
+    }
+
+    public function isPlayerTurn(){
+        return $this->getCurrentFighter() === $this->fighters['player'];
+    }
+
+
+    public function playerTurn(){
+        return $this->getCurrentFighter() === $this->fighters['player'];
+    }
+
+    public function advanceTurn(){
+        $this->turnIndex++;
+        $this->turnCount++;
+    }
+
+    public function isOver(){
+        return $this->getWinner() != null || $this->turnCount >= $this->maxTurn;
+    }
+
+    public function getWinner(){
+        foreach($this->fighters as $fighter){
+            if(!$fighter->isAlive()){
+                return $this->getOponnent($fighter);
+            }
+        }
+        return null;
+    }
+
+
+    public function playTurn(){
+        $current = $this->getCurrentFighter();
+
+        if(!$current->canAct()){
+            $this->log->register("{$current->getName()} não pode agir");
+            $this->advanceTurn();
+            return;
+        }
+
+        $target = $this->getOponnent($current);
+        $controller = $this->controllers[spl_object_id($current)];
+        $controller->decideAction($current, $target);
+        
+        $this->advanceTurn();
+    }
+    
+    /*
     public function start(){
         #apenas lógica teste
         for($i = 0; $i < $this->maxTurn; $i++){
@@ -33,6 +97,7 @@ class Battle{
         }
         echo "<br>";
     }
+    */
 
 
 

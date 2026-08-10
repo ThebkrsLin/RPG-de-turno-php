@@ -22,6 +22,7 @@ class Item implements Usable{
             case "DamageBuff":
                 $target->buffAttack($this->value);
                 break;
+                
             case "DefenseBuff":
                 $target->buffDefense($this->value);
                 break;
