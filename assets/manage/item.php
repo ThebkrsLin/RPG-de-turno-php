@@ -1,5 +1,5 @@
 <?php
-require_once "interfaces/usable.php";
+require_once __dir__."/../interfaces/usable.php";
 
 class Item implements Usable{
     private $name;

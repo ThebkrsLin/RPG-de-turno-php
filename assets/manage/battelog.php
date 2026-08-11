@@ -4,6 +4,7 @@ class Battlelog{
     private array $entries;
     public function __construct(){
         echo "Log Criado";
+        $this->entries = [];
     }
 
     public function register(string $message){

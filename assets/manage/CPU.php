@@ -4,7 +4,8 @@ class CPU implements DecideAction{
 
 	public function decideAction(Character $user, Character $target)
     {
-        $action = random_int(1, 2);
+        $action = 1;#random_int(1, 2);
+        
         switch($action){
             case 1:
                 $user->Attack($target);

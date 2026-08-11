@@ -23,8 +23,8 @@ class Battle{
     public function addFighters(Character $player, Character $cpu){
         $this->fighters = ['player' => $player, 'cpu' => $cpu];
         $this->controllers = [
-            spl_object_id($player) => new Player(),
-            spl_object_id($cpu) => new CPU()
+            'player' => new Player(),
+            'cpu' => new CPU()
         ];
         $this->setOrder();
     }
@@ -38,11 +38,6 @@ class Battle{
     }
 
     public function isPlayerTurn(){
-        return $this->getCurrentFighter() === $this->fighters['player'];
-    }
-
-
-    public function playerTurn(){
         return $this->getCurrentFighter() === $this->fighters['player'];
     }
 
@@ -68,39 +63,24 @@ class Battle{
     public function playTurn(){
         $current = $this->getCurrentFighter();
 
-        if(!$current->canAct()){
+        if(!$current->canAct() ){
             $this->log->register("{$current->getName()} não pode agir");
             $this->advanceTurn();
             return;
         }
 
+        if($current === $this->fighters['player']){
+            $controller = $this->controllers['player'];
+        }
+
+        else{
+            $controller = $this->controllers['cpu'];
+        }
+
         $target = $this->getOponnent($current);
-        $controller = $this->controllers[spl_object_id($current)];
         $controller->decideAction($current, $target);
-        
         $this->advanceTurn();
     }
-    
-    /*
-    public function start(){
-        #apenas lógica teste
-        for($i = 0; $i < $this->maxTurn; $i++){
-            $first = ($i % 2 == 0) ? $this->order[0] : $this->order[1];
-            $second = ($i % 2 != 0) ? $this->order[1] : $this->order[0];
-            if($i % 2 != 0){
-                #$this->order[0] = "o primeiro pode agir";
-            }
-
-            else{
-                #this->order[1] = "O segundo pode agir";
-            }
-        }
-        echo "<br>";
-    }
-    */
-
-
-
 
     /**
      * Get the value of fighters

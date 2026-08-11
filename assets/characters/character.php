@@ -30,13 +30,14 @@ abstract class Character implements Hittable{
 
     public abstract function useAbillity(Character $target);
 
-    protected function canAct(){
+    public function canAct(){
         if(!$this->isAlive()){
             #throw new Exception("O Personagem Foi derrotado, não poderá agir!!!");
             echo "O Personagem Foi derrotado, não poderá agir!!!";
+            return false;
         }
+
         return true;
-        
     }
 
     public function Heal($v){

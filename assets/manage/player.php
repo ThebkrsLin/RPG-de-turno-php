@@ -1,6 +1,6 @@
 <?php
 require_once __dir__."/../interfaces/decideaction.php";
-require_once __dir__."/../item.php";
+require_once "item.php";
 class Player implements DecideAction{
     protected $playerTurn;
 
@@ -8,14 +8,15 @@ class Player implements DecideAction{
     public function decideAction(Character $user, Character $target)
     {
         $action = $_POST['pAction'] ?? null;
-
         switch($action){
             case "attack":
                 $user->Attack($target);
+                echo "Atacou a CPU!";
                 break;
 
             case "abillity":
                 $user->useAbillity($target);
+                echo "Usou uma Habilidade na CPU";
                 break;
 
             case "item":
@@ -24,4 +25,5 @@ class Player implements DecideAction{
                 break;
         }
     }
+
 }
