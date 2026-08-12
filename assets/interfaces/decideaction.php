@@ -1,5 +1,5 @@
 <?php
 
 interface DecideAction{
-    public function decideAction(Character $user, Character $target);
+    public function decideAction(Character $user, Character $target): String;
 }

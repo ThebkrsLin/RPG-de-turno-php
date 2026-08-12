@@ -20,23 +20,38 @@
 
         session_start();
 
+        $itens =[
+            new Item("Poção de Cura", "Heal", 30),
+            new Item("Encantamento Força", "damageBuff", 20)
+            ];
         if(isset($_GET['reset'])){
+            if($_SESSION['battle']->getWinner() === $_SESSION['player']){
+                $_SESSION['player']->LevelUp();
+            }
+        
             unset($_SESSION['battle']);
             header("Location: ".$_SERVER['PHP_SELF']);
             exit;
         }
 
-        $cpuChoose = random_int(1, 3);
+        if(isset($_GET['newchar'])){
+            session_unset();
+            session_destroy();
+            header("Location: index.php");
+            exit;
+        }
 
-        if(!isset($_SESSION['battle'])){
-            $charName = $_POST['charName'] ?? $_SESSION['charName'] ?? 'Player';
-            $pchoosen = $_POST['charClass'] ?? $_SESSION['charClass'] ?? random_int(1, 3);
-            
+        if(!isset($_SESSION['player'])){
+            /*
+            if(!isset($_POST['charName']) && !isset($_POST['charClass'])){
+
+            }*/
+
+            $charName = isset($_POST['charName']) ? $_POST['charName'] : "Player";
+            $pClass = isset($_POST['charClass']) ? $_POST['charClass'] : random_int(1, 3);
             $player = null;
-            $cpu = null;
 
-
-            switch($pchoosen){
+            switch($pClass){
                 case "Warrior":
                 case 1:
                     $player = new Warrior($charName);
@@ -53,6 +68,18 @@
                     break;
             }
 
+            $_SESSION['player'] = $player;
+
+        }
+
+        else{
+            $player = $_SESSION['player'];
+        }
+
+        if(!isset($_SESSION['battle']) && isset($_SESSION['player'])){
+            $cpu = null;
+            $cpuChoose = random_int(1, 3);
+
             switch($cpuChoose){
                 case 1:
                     $cpu = new Warrior("(CPU)");
@@ -68,7 +95,13 @@
             }
 
             $battle = new Battle();
+            $_SESSION['player']->resetStats();
             $battle->addFighters($player, $cpu);
+
+            if($player->getLevel() > $cpu->getLevel()){
+                $battle->GrindCpu();
+                echo "A CPU upou de nível";
+            }
 
             $_SESSION['battle'] = $battle;
         }
@@ -93,6 +126,8 @@
         $player = $fighters['player'];
         $cpu = $fighters['cpu'];
         ?><br>
+
+        <!--Debug Session-->
         <pre>
             turnCount: <?= $battle->getTurnCount() ?>
             isPlayerTurn: <?= var_export($battle->isPlayerTurn(), true) ?>
@@ -102,11 +137,13 @@
             Order[1]: <?= $battle->getOrder()[1]->getName() ?>
             Player === Order[0]: <?= var_export($fighters['player'] === $battle->getOrder()[0], true) ?>
             Player === Order[1]: <?= var_export($fighters['player'] === $battle->getOrder()[1], true) ?>
-            Player HP: <?= $battle->getFighters()['player']->getHp() ?>
-            CPU HP: <?= $battle->getFighters()['cpu']->getHp()?>
         </pre>
-        Player HP : <?= $player->getHp(); ?><br>
-        CPU HP: <?= $fighters['cpu']->getHp();?><br>
+        Player LVL : <?= $player->getLevel(); ?><br>
+        Player EP: <?= $player->getEnergyPoints()?><br>
+        Player max EP: <?= $player->getEnergyPoints(); ?>
+        CPU LVL: <?= $fighters['cpu']->getLevel();?><br>
+
+        <!--Combat Session-->
         <h1>Combate</h1>
 
         <div class="status">
@@ -119,21 +156,49 @@
                 <?php $winner = $battle->getWinner(); ?>
                 <?=  $winner ? "Vencedor: ". htmlspecialchars($winner->getName()) : "Empate (limite de turnos atingido)"?>
             </h2>
-            <a href="?reset=1">ogar Novamente</a>
+            <a href="?reset=1">Jogar Novamente (mesmo personagem)</a><br>
+            <a href="?newchar=1">Criar um personagem novo</a>
 
         <?php elseif($battle->isPlayerTurn()): ?>
             <form method="POST">
                 <button type="submit" name="pAction" value="attack">Atacar</button>
-                <button type="submit" name="pAction" value="abillity">Usar Habilidade</button>
+
+                <?php 
+                if(!$battle->getControllers()['player']->getDisableAbillity()){
+                echo '<button type="submit" name="pAction" value="abillity">Usar Habilidade</button><br>';
+                }
+
+                else{
+                    echo '<button type="submit" name="pAction" value"abillity" disabled>Usar Habilidade</button><br>';
+                }
+
+                if(!empty($player->getInventory())){
+                    echo "<p>Pode usar um item!!!!</p>";
+                    echo "Itens: ";
+                    foreach($player->getInventory() as $item){
+                        print_r($item); 
+                        echo "<select name='itemChoosed'>";
+                        echo "<option value='{$item->getName()}'>{$item->getName()}</option>";
+                        echo "</select>";
+                    }
+                    echo "<button type='submit' name='pAction' value='item'>Usar item</button>";
+                }
+
+                else{
+                    echo  "<p>Não possui itens</p>";
+                }
+                ?>
+
             </form>
         
         <?php else: ?>
             <p>Processando turno CPU</p>
+            <?= sleep(5); ?>
         <?php endif;?>
         <hr>
         <h3>Log de Batalha</h3>
-        <?= $battle->getLog()->render() ?>
-        <a href="index.php?reset=1">Voltar</a>
+        <?= $_SESSION['battle']->getLog()->render() ?>
+        <a href="?newchar=1">Voltar</a>
     </div>
 </body>
 </html>

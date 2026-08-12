@@ -20,6 +20,7 @@ abstract class Character implements Hittable{
         $this->setDefense($def);
         $this->setInitiative($ini);
         $this->setLevel(1);
+        $this->inventory = [];
     }
 
     public abstract function LevelUp();
@@ -38,6 +39,11 @@ abstract class Character implements Hittable{
         }
 
         return true;
+    }
+
+    public function resetStats(){
+        $this->hp = $this->maxHp;
+        $this->energyPoints = $this->maxEnergyPoints;
     }
 
     public function Heal($v){

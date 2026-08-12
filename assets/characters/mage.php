@@ -21,6 +21,7 @@ class Mage extends Character{
         else{   
             $this->energyPoints -= $r;
             $target->RecieveDamage($this->attack * 1.8);
+            return true;
         }
     }
 

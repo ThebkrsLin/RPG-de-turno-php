@@ -79,7 +79,17 @@ class Battle{
 
         $target = $this->getOponnent($current);
         $controller->decideAction($current, $target);
+        $message = $controller->decideAction($current, $target);
+        $this->log->register($message);
         $this->advanceTurn();
+    }
+
+    public function GrindCPU(){
+        $choose = random_int(-1, 1);
+        echo "$choose";
+        for($i = 0; $i < $this->fighters['player']->getLevel()+$choose; $i++){
+            $this->fighters['cpu']->LevelUp();
+        }
     }
 
     /**
@@ -157,5 +167,9 @@ class Battle{
     public function setTurnCount(int $turnCount): self {
         $this->turnCount = $turnCount;
         return $this;
+    }
+
+    public function getControllers(): array {
+        return $this->controllers;
     }
 }
