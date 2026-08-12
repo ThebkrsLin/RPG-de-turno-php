@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,8 +22,16 @@
 
         $itens =[
             new Item("Poção de Cura", "Heal", 30),
-            new Item("Encantamento Força", "damageBuff", 20)
-            ];
+            new Item("Encantamento Força", "damageBuff", 15),
+            new Item("Escudo Mágico", "defenseBuff", 10)
+        ];
+
+        $defaultWeapons = [
+            new Weapon("Espada do Crepusculo", 15),
+            new Weapon("Cajado dos Eternos", 25),
+            new Weapon("Arco de Flechas tripla", 20)
+        ];
+
         if(isset($_GET['reset'])){
             if($_SESSION['battle']->getWinner() === $_SESSION['player']){
                 $_SESSION['player']->LevelUp();
@@ -55,16 +63,19 @@
                 case "Warrior":
                 case 1:
                     $player = new Warrior($charName);
+                    $player->addItem($defaultWeapons[0]);
                     break;
                 
                 case "Mage":
                 case 2:
                     $player = new Mage($charName);
+                    $player->addItem($defaultWeapons[1]);
                     break;
 
                 case "Archer":
                 case 3:
                     $player = new Archer($charName);
+                    $player->addItem($defaultWeapons[2]);
                     break;
             }
 
