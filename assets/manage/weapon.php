@@ -1,15 +1,15 @@
 <?php
 class Weapon{
     private $name;
-    private $aditionalDamage;
+    private $additionalDamage;
 
     public function __construct($n, $dmg){
         $this->name = $n;
-        $this->aditionalDamage = $dmg;
+        $this->additionalDamage = $dmg;
     }
 
     public function setUpWeapon(){
-        return $this->aditionalDamage;
+        return $this->additionalDamage;
     }
 
     /**
@@ -17,5 +17,9 @@ class Weapon{
      */
     public function getName() {
         return $this->name;
+    }
+
+    public function getAdditionalDamage(){
+        return $this->additionalDamage;
     }
 }

@@ -6,7 +6,7 @@ class Warrior extends Character{
 
     public function __construct($n)
     {
-        parent::__construct(120, 30, 18, 15, 9);
+        parent::__construct(120, 30, 18, 13, 9);
         $this->setName($n);
     }
 

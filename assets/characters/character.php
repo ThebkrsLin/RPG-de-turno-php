@@ -9,6 +9,7 @@ abstract class Character implements Hittable{
     protected $defense;
     protected $initiative;
     protected array $inventory;
+    protected $deafaultWeapon;
     protected $level;
 
     public function __construct($mHp, $maxEP, $att, $def, $ini){
@@ -70,6 +71,13 @@ abstract class Character implements Hittable{
     public function Attack(Character $target){
         if($this->canAct()){
             $target->RecieveDamage($this->attack);
+        }
+    }
+
+    public function AttackWithWeapon(Character $target){
+        if($this->canAct()){
+            $bonusDmg = $this->deafaultWeapon->getAdditionalDamage();
+            $target->RecieveDamage($this->getAttack()+$bonusDmg);
         }
     }
 
@@ -159,5 +167,13 @@ abstract class Character implements Hittable{
     public function setLevel($level): self {
         $this->level = $level;
         return $this;
+    }
+
+    public function getDefaultWeapon(){
+        return $this->deafaultWeapon;
+    }
+    
+    public function setDefaultWeapon($obj){
+        $this->deafaultWeapon = $obj;
     }
 }

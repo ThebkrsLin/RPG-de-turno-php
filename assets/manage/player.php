@@ -17,6 +17,10 @@ class Player implements DecideAction{
                 $user->Attack($target);
                 return "{$user->getName()} atacou {$target->getName()}";
 
+            case "weapon":
+                $user->AttackWithWeapon($target);
+                return "{$user->getName()} atacou o {$target->getName()}com uma {$user->getDefaultWeapon()->getName()}";
+
             case "abillity":
                 if($user->useAbillity($target)){
                     $this->disableAbillity = false;
@@ -30,13 +34,18 @@ class Player implements DecideAction{
                 }
 
             case "item":
+                $inventory = $user->getInventory();
+                $inventory[$itemChoosed]->useItem($user);
                 switch($itemChoosed){
                     case "Poção de Cura":
-                        $user->Heal(20);
-                        $user->removeItem("Poção de Cura");
-                        return "{$user->getName()} usou poção de cura e curou 20 hp";
+                        return "{$user->getName()} usou {$itemChoosed} e curou 30 de hp";
+
+                    case "Encantamento Força":
+                        return "{$user->getName()} usou {$itemChoosed} e aumentou o dano do ataque";
+
+                    case "Escudo Mágico":
+                        return "{$user->getName()} usou {$itemChoosed} e aumentou a defesa";
                 }
-                break;
         }
     }
 

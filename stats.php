@@ -33,10 +33,11 @@
         ];
 
         if(isset($_GET['reset'])){
-            if($_SESSION['battle']->getWinner() === $_SESSION['player']){
+            if($_SESSION['battle']->getWinner() == $_SESSION['player']){
                 $_SESSION['player']->LevelUp();
+                $_SESSION['player']->resetStats();
             }
-        
+
             unset($_SESSION['battle']);
             header("Location: ".$_SERVER['PHP_SELF']);
             exit;
@@ -63,22 +64,23 @@
                 case "Warrior":
                 case 1:
                     $player = new Warrior($charName);
-                    $player->addItem($defaultWeapons[0]);
+                    $player->setDefaultWeapon($defaultWeapons[0]);
                     break;
                 
                 case "Mage":
                 case 2:
                     $player = new Mage($charName);
-                    $player->addItem($defaultWeapons[1]);
+                    $player->setDefaultWeapon($defaultWeapons[1]);
                     break;
 
                 case "Archer":
                 case 3:
                     $player = new Archer($charName);
-                    $player->addItem($defaultWeapons[2]);
+                    $player->setDefaultWeapon($defaultWeapons[2]);
                     break;
             }
 
+            $player->addItem($itens[0]);
             $_SESSION['player'] = $player;
 
         }
@@ -94,19 +96,24 @@
             switch($cpuChoose){
                 case 1:
                     $cpu = new Warrior("(CPU)");
+                    $cpu->setDefaultWeapon($defaultWeapons[0]);
                     break;
 
                 case 2:
                     $cpu = new Mage("(CPU)");
+                    $cpu->setDefaultWeapon($defaultWeapons[1]);
                     break;
 
                 case 3: 
                     $cpu = new Archer("(CPU)");
+                    $cpu->setDefaultWeapon($defaultWeapons[2]);
                     break;
             }
 
             $battle = new Battle();
             $_SESSION['player']->resetStats();
+            $cpu->addItem($itens[0]);
+            $cpu->addItem($itens[0]);
             $battle->addFighters($player, $cpu);
 
             if($player->getLevel() > $cpu->getLevel()){
@@ -150,8 +157,10 @@
             Player === Order[1]: <?= var_export($fighters['player'] === $battle->getOrder()[1], true) ?>
         </pre>
         Player LVL : <?= $player->getLevel(); ?><br>
-        Player EP: <?= $player->getEnergyPoints()?><br>
-        Player max EP: <?= $player->getEnergyPoints(); ?>
+        <pre>
+            Player object: <?= print_r($player) ?><br>
+            CPU object: <?= print_r($cpu) ?>
+        </pre>
         CPU LVL: <?= $fighters['cpu']->getLevel();?><br>
 
         <!--Combat Session-->
@@ -173,6 +182,7 @@
         <?php elseif($battle->isPlayerTurn()): ?>
             <form method="POST">
                 <button type="submit" name="pAction" value="attack">Atacar</button>
+                <button type="submit" name="pAction" value="weapon">Atacar com <?php echo $player->getDefaultWeapon()->getName(); ?></button>
 
                 <?php 
                 if(!$battle->getControllers()['player']->getDisableAbillity()){
@@ -204,7 +214,7 @@
         
         <?php else: ?>
             <p>Processando turno CPU</p>
-            <?= sleep(5); ?>
+            <?php sleep(3);?>
         <?php endif;?>
         <hr>
         <h3>Log de Batalha</h3>

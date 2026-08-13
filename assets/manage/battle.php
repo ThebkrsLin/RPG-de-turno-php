@@ -90,6 +90,7 @@ class Battle{
         for($i = 0; $i < $this->fighters['player']->getLevel()+$choose; $i++){
             $this->fighters['cpu']->LevelUp();
         }
+        $this->fighters['cpu']->resetStats();
     }
 
     /**
