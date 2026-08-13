@@ -15,13 +15,13 @@ class Warrior extends Character{
     {
         $this->canAct();
         $r = 15;
-        if($this->energyPoints < $r){
+        if($this->ep < $r){
             echo $this->name." está sem energia, não poderá usar a habilidade<br>";
             return false;
         }
         
         else{   
-            $this->energyPoints -= $r;
+            $this->ep -= $r;
             $target->RecieveDamage($this->attack * 1.8);
             return true;
         }
@@ -31,7 +31,7 @@ class Warrior extends Character{
         $this->maxHp += 10;
         $this->defense += 3;
         $this->attack += 2;
-        $this->maxEnergyPoints += 2;
+        $this->maxep += 2;
         $this->initiative += 1;
         $this->level += 1;
     }

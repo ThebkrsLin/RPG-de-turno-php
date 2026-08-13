@@ -13,13 +13,13 @@ class Archer extends Character{
     public function useAbillity(Character $target){
         $this->canAct();
         $r = 10;
-        if($this->energyPoints < $r){
+        if($this->ep < $r){
             echo $this->name." está sem energia, não poderá usar a habilidade";
             return false;
         }
         
         else{   
-            $this->energyPoints -= $r;
+            $this->ep -= $r;
             $target->RecieveDamage($this->attack * 1.8);
             return true;
         }
@@ -29,7 +29,7 @@ class Archer extends Character{
         $this->maxHp += 5;
         $this->defense += 2;
         $this->attack += 5;
-        $this->maxEnergyPoints += 4;
+        $this->maxep += 4;
         $this->initiative += 2;
         $this->level += 1;
     }

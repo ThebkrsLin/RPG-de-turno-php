@@ -11,6 +11,7 @@ class Player implements DecideAction{
     {
         $action = $_POST['pAction'] ?? null;
         $itemChoosed = $_POST['itemChoosed'] ?? null;
+        echo "$itemChoosed";
 
         switch($action){
             case "attack":
@@ -36,6 +37,7 @@ class Player implements DecideAction{
             case "item":
                 $inventory = $user->getInventory();
                 $inventory[$itemChoosed]->useItem($user);
+
                 switch($itemChoosed){
                     case "Poção de Cura":
                         return "{$user->getName()} usou {$itemChoosed} e curou 30 de hp";

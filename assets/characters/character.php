@@ -3,10 +3,12 @@ require_once __dir__."/../interfaces/hittable.php";
 abstract class Character implements Hittable{
     protected $hp;
     protected $maxHp;
-    protected $maxEnergyPoints;
-    protected $energyPoints;
+    protected $maxep;
+    protected $ep;
     protected $attack;
+    protected $lastAttack;
     protected $defense;
+    protected $lastDefense;
     protected $initiative;
     protected array $inventory;
     protected $deafaultWeapon;
@@ -15,8 +17,8 @@ abstract class Character implements Hittable{
     public function __construct($mHp, $maxEP, $att, $def, $ini){
         $this->setMaxHp($mHp);
         $this->setHp($mHp);
-        $this->setMaxEnergyPoints($maxEP);
-        $this->setEnergyPoints($maxEP);
+        $this->setMaxep($maxEP);
+        $this->setep($maxEP);
         $this->setAttack($att);
         $this->setDefense($def);
         $this->setInitiative($ini);
@@ -44,7 +46,7 @@ abstract class Character implements Hittable{
 
     public function resetStats(){
         $this->hp = $this->maxHp;
-        $this->energyPoints = $this->maxEnergyPoints;
+        $this->ep = $this->maxep;
     }
 
     public function Heal($v){
@@ -60,7 +62,7 @@ abstract class Character implements Hittable{
     }
 
     public function LoseEnergy($energy){
-        $this->energyPoints -= $energy;
+        $this->ep -= $energy;
     }
 
     public function RecieveDamage(float $dmg){
@@ -81,7 +83,7 @@ abstract class Character implements Hittable{
         }
     }
 
-    public function addItem($item){
+    public function addItem(Item $item){
         $this->inventory[$item->getName()] = $item;        
     }
 
@@ -108,22 +110,22 @@ abstract class Character implements Hittable{
         
     }
 
-    public function getMaxEnergyPoints(){
-        return $this->maxEnergyPoints;
+    public function getMaxep(){
+        return $this->maxep;
     }
 
-    public function setMaxEnergyPoints(int $maxEnergyPoints){
-        $this->maxEnergyPoints = $maxEnergyPoints;
+    public function setMaxep(int $maxep){
+        $this->maxep = $maxep;
         
     }
 
     
-    public function getEnergyPoints(){
-        return $this->energyPoints;
+    public function getEp(){
+        return $this->ep;
     }
 
-    public function setEnergyPoints($energyPoints){
-        $this->energyPoints = $energyPoints;
+    public function setEp($ep){
+        $this->ep = $ep;
         
     }
 

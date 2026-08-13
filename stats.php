@@ -27,15 +27,17 @@
         ];
 
         $defaultWeapons = [
-            new Weapon("Espada do Crepusculo", 15),
-            new Weapon("Cajado dos Eternos", 25),
-            new Weapon("Arco de Flechas tripla", 20)
+            new Weapon("Espada do Crepusculo", 5),
+            new Weapon("Cajado dos Eternos", 10),
+            new Weapon("Arco de Flechas tripla", 8)
         ];
 
         if(isset($_GET['reset'])){
             if($_SESSION['battle']->getWinner() == $_SESSION['player']){
                 $_SESSION['player']->LevelUp();
                 $_SESSION['player']->resetStats();
+                $_SESSION['player']->addItem($itens[random_int(0, 2)]);
+                echo "Você ganhou um item!!";
             }
 
             unset($_SESSION['battle']);
@@ -190,18 +192,17 @@
                 }
 
                 else{
-                    echo '<button type="submit" name="pAction" value"abillity" disabled>Usar Habilidade</button><br>';
+                    echo '<button type="submit" name="pAction" value="abillity" disabled>Usar Habilidade</button><br>';
                 }
 
                 if(!empty($player->getInventory())){
                     echo "<p>Pode usar um item!!!!</p>";
                     echo "Itens: ";
+                    echo "<select name='itemChoosed'>";
                     foreach($player->getInventory() as $item){
-                        print_r($item); 
-                        echo "<select name='itemChoosed'>";
                         echo "<option value='{$item->getName()}'>{$item->getName()}</option>";
-                        echo "</select>";
                     }
+                    echo "</select>";
                     echo "<button type='submit' name='pAction' value='item'>Usar item</button>";
                 }
 
