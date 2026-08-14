@@ -6,13 +6,13 @@ class Mage extends Character{
     
     public function __construct($n)
     {
-        parent::__construct(80, 60, 10, 6, 16);
+        parent::__construct(80, 40, 10, 6, 16);
         $this->setName($n);
     }
 
     public function useAbillity(Character $target){
         $this->canAct();
-        $r = 20;
+        $r = 30;
         if($this->ep < $r){
            echo $this->name." está sem energia, não poderá usar a habilidade";
            return false;
@@ -20,7 +20,7 @@ class Mage extends Character{
         
         else{   
             $this->ep -= $r;
-            $target->RecieveDamage($this->attack * 1.8);
+            $target->RecieveDamage($this->attack * 3.8);
             return true;
         }
     }

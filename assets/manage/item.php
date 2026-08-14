@@ -20,11 +20,11 @@ class Item implements Usable{
                 break;
 
             case "DamageBuff":
-                $target->buffAttack($this->value);
+                $target->buffAttack($this->value, 15);
                 break;
                 
             case "DefenseBuff":
-                $target->buffDefense($this->value);
+                $target->buffDefense($this->value, 10);
                 break;
         }
         $target->removeItem($this->getName());

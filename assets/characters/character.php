@@ -6,13 +6,14 @@ abstract class Character implements Hittable{
     protected $maxep;
     protected $ep;
     protected $attack;
-    protected $lastAttack;
+    protected $attackBuff;
     protected $defense;
-    protected $lastDefense;
+    protected $defenseBuff;
     protected $initiative;
     protected array $inventory;
     protected $deafaultWeapon;
     protected $level;
+    protected $buffTurnsLimit;
 
     public function __construct($mHp, $maxEP, $att, $def, $ini){
         $this->setMaxHp($mHp);
@@ -21,8 +22,12 @@ abstract class Character implements Hittable{
         $this->setep($maxEP);
         $this->setAttack($att);
         $this->setDefense($def);
+
+        # Valores Padrões que serão iniciados sem ser modificados pelos personagens
         $this->setInitiative($ini);
         $this->setLevel(1);
+        $this->setAttackBuff(0);
+        $this->setDefenseBuff(0);
         $this->inventory = [];
     }
 
@@ -47,18 +52,37 @@ abstract class Character implements Hittable{
     public function resetStats(){
         $this->hp = $this->maxHp;
         $this->ep = $this->maxep;
+        $this->deafaultWeapon->setWeaponDuration($this->deafaultWeapon->getMaxDuration());
     }
 
     public function Heal($v){
         $this->hp += $v;
     }
 
-    public function buffAttack($v){
-        $this->attack += $v;
+    public function buffAttack($v, $d){
+        $this->buffTurnsLimit = $d;
+        $this->attackBuff = $v;
     }
 
-    public function buffDefense($v){
-        $this->defense += $v;
+    public function buffDefense($v, $d){
+        $this->buffTurnsLimit = $d;
+        $this->defenseBuff = $v;
+    }
+
+    public function buffTick(){
+        if($this->buffTurnsLimit > 0){
+            $this->buffTurnsLimit--;
+        }
+
+        else{
+            $this->clearBuffs();
+        }
+
+    }
+
+    public function clearBuffs(){
+        $this->attackBuff = 0;
+        $this->defenseBuff = 0;
     }
 
     public function LoseEnergy($energy){
@@ -66,13 +90,13 @@ abstract class Character implements Hittable{
     }
 
     public function RecieveDamage(float $dmg){
-        $attackerDmg = max(0, $dmg - $this->defense);
+        $attackerDmg = max(0, $dmg - ($this->defense+$this->defenseBuff));
         $this->hp = max(0, $this->hp - $attackerDmg);
     }
 
     public function Attack(Character $target){
         if($this->canAct()){
-            $target->RecieveDamage($this->attack);
+            $target->RecieveDamage($this->attack + $this->attackBuff);
         }
     }
 
@@ -177,5 +201,35 @@ abstract class Character implements Hittable{
     
     public function setDefaultWeapon($obj){
         $this->deafaultWeapon = $obj;
+    }
+
+    /**
+     * Get the value of attackBuff
+     */
+    public function getAttackBuff() {
+        return $this->attackBuff;
+    }
+
+    /**
+     * Set the value of attackBuff
+     */
+    public function setAttackBuff($attackBuff): self {
+        $this->attackBuff = $attackBuff;
+        return $this;
+    }
+
+    /**
+     * Get the value of defenseBuff
+     */
+    public function getDefenseBuff() {
+        return $this->defenseBuff;
+    }
+
+    /**
+     * Set the value of defenseBuff
+     */
+    public function setDefenseBuff($defenseBuff): self {
+        $this->defenseBuff = $defenseBuff;
+        return $this;
     }
 }

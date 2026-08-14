@@ -19,6 +19,7 @@ class Player implements DecideAction{
                 return "{$user->getName()} atacou {$target->getName()}";
 
             case "weapon":
+                $user->getDefaultWeapon()->weaponTick();
                 $user->AttackWithWeapon($target);
                 return "{$user->getName()} atacou o {$target->getName()}com uma {$user->getDefaultWeapon()->getName()}";
 

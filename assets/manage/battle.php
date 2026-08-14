@@ -81,6 +81,7 @@ class Battle{
             $this->rechargeEP();
         }
 
+        $current->buffTick();
         $target = $this->getOponnent($current);
         #$controller->decideAction($current, $target);
         $message = $controller->decideAction($current, $target);
@@ -95,8 +96,14 @@ class Battle{
         $c->setEp(max($c->getMaxEp(), $c->getEp()+10));
     }
 
+    public function disableBuffs(){
+        $p = $this->fighters['player'];
+        $p->setAttack($p->getLastAttack());
+        $p->setDefense($p->getLastDefense());
+    }
+
     public function GrindCPU(){
-        $choose = random_int(-1, 1);
+        $choose = random_int(-1, 0); # -1 = mesmo nível do player; 0 = um nível acima do player
         echo "$choose";
         for($i = 0; $i < $this->fighters['player']->getLevel()+$choose; $i++){
             $this->fighters['cpu']->LevelUp();

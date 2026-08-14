@@ -1,3 +1,15 @@
+<?php
+require_once "./assets/characters/mage.php";
+require_once "./assets/characters/warrior.php";
+require_once "./assets/characters/archer.php";
+require_once "./assets/manage/CPU.php";
+require_once "./assets/manage/player.php";
+require_once "./assets/manage/item.php";
+require_once "./assets/manage/weapon.php";
+require_once "./assets/manage/battle.php";
+
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -9,17 +21,6 @@
     <div>
         <a href="?reset=1">Reset de emergência</a>
         <?php
-        require_once "./assets/characters/mage.php";
-        require_once "./assets/characters/warrior.php";
-        require_once "./assets/characters/archer.php";
-        require_once "./assets/manage/CPU.php";
-        require_once "./assets/manage/player.php";
-        require_once "./assets/manage/item.php";
-        require_once "./assets/manage/weapon.php";
-        require_once "./assets/manage/battle.php";
-
-        session_start();
-
         $itens =[
             new Item("Poção de Cura", "Heal", 30),
             new Item("Encantamento Força", "damageBuff", 15),
@@ -27,18 +28,19 @@
         ];
 
         $defaultWeapons = [
-            new Weapon("Espada do Crepusculo", 5),
-            new Weapon("Cajado dos Eternos", 10),
-            new Weapon("Arco de Flechas tripla", 8)
+            new Weapon("Espada do Crepusculo", 20, 5),
+            new Weapon("Cajado dos Eternos", 15, 10),
+            new Weapon("Arco de Flechas tripla", 10, 7)
         ];
 
         if(isset($_GET['reset'])){
             if($_SESSION['battle']->getWinner() == $_SESSION['player']){
                 $_SESSION['player']->LevelUp();
-                $_SESSION['player']->resetStats();
                 $_SESSION['player']->addItem($itens[random_int(0, 2)]);
                 echo "Você ganhou um item!!";
             }
+
+            $_SESSION['player']->resetStats();
 
             unset($_SESSION['battle']);
             header("Location: ".$_SERVER['PHP_SELF']);
@@ -113,9 +115,11 @@
             }
 
             $battle = new Battle();
-            $_SESSION['player']->resetStats();
-            $cpu->addItem($itens[0]);
-            $cpu->addItem($itens[0]);
+            #$_SESSION['player']->resetStats();
+            for($i = 0; $i < 3; $i++){
+                $cpu->addItem($itens[random_int(0, 2)]);
+            }
+            
             $battle->addFighters($player, $cpu);
 
             if($player->getLevel() > $cpu->getLevel()){
@@ -134,14 +138,33 @@
             if($battle->isPlayerTurn()){
                 $battle->playTurn();
             }
+
+            if (!$battle->isOver() && !$battle->isPlayerTurn()) {
+                $_SESSION['cpuStep'] = 'waiting';
+            }
         }
 
+        if (isset($_GET['cpu']) && $_GET['cpu'] === '1' && ($_SESSION['cpuStep'] ?? null) === 'waiting'){
+            unset($_SESSION['cpuStep']);
 
-        while(!$battle->isOver() && !$battle->isPlayerTurn()){
-            $battle->playTurn();
+            if (!$battle->isOver() && !$battle->isPlayerTurn()) {
+                $battle->playTurn();
+                $_SESSION['battle'] = $battle;
+            }   
         }
+ 
+    
+
+
+        /*
+        if($_SERVER['REQUEST_METHOD'] === 'POST' && !$battle->isPlayerTurn() && !$battle->isOver()){
+            $battle->playturn();
+        }
+        */
+
         $_SESSION['battle'] = $battle;
 
+        $cpuWaiting = ($_SESSION['cpuStep'] ?? null) === 'waiting';
         $fighters = $battle->getFighters();
         $player = $fighters['player'];
         $cpu = $fighters['cpu'];
@@ -156,14 +179,14 @@
             Order[0]: <?= $battle->getOrder()[0]->getName() ?>
             Order[1]: <?= $battle->getOrder()[1]->getName() ?>
             Player === Order[0]: <?= var_export($fighters['player'] === $battle->getOrder()[0], true) ?>
-            Player === Order[1]: <?= var_export($fighters['player'] === $battle->getOrder()[1], true) ?>
-        </pre>
+            Player === Order[1]: <?= var_export($fighters['player'] === $battle->getOrder()[1], true) ?><br>
+            Player Items: <?= print_r($player) ?><br>
+            CPU Items: <?= print_r($cpu) ?>
+        </pre><br>
         Player LVL : <?= $player->getLevel(); ?><br>
-        <pre>
-            Player object: <?= print_r($player) ?><br>
-            CPU object: <?= print_r($cpu) ?>
-        </pre>
+        Player EP: <?= $player->getEp() ?><br>
         CPU LVL: <?= $fighters['cpu']->getLevel();?><br>
+        CPU EP: <?= $cpu->getEp(); ?>
 
         <!--Combat Session-->
         <h1>Combate</h1>
@@ -183,16 +206,25 @@
 
         <?php elseif($battle->isPlayerTurn()): ?>
             <form method="POST">
-                <button type="submit" name="pAction" value="attack">Atacar</button>
-                <button type="submit" name="pAction" value="weapon">Atacar com <?php echo $player->getDefaultWeapon()->getName(); ?></button>
+                <button type="submit" name="pAction" value="attack">Atacar</button><br>
+                <?php
+                if($player->getDefaultWeapon()->getWeaponDuration() > 0){
+                    echo "<button type='submit' name='pAction' value='weapon'>{$player->getDefaultWeapon()->getName()}</button> ";
+                    
+                }
 
-                <?php 
+                else{
+                    printf('<button type="submit" disabled>Atacar com %s</button> ', $player->getDefaultWeapon()->getName());
+                }
+                
+                echo "Estado {$player->getDefaultWeapon()->getWeaponDuration()}<br>";
+
                 if(!$battle->getControllers()['player']->getDisableAbillity()){
                 echo '<button type="submit" name="pAction" value="abillity">Usar Habilidade</button><br>';
                 }
 
                 else{
-                    echo '<button type="submit" name="pAction" value="abillity" disabled>Usar Habilidade</button><br>';
+                    echo '<button type="submit" disabled>Usar Habilidade</button><br>';
                 }
 
                 if(!empty($player->getInventory())){
@@ -212,10 +244,15 @@
                 ?>
 
             </form>
-        
-        <?php else: ?>
+
+        <?php elseif ($cpuWaiting): ?>
+
             <p>Processando turno CPU</p>
-            <?php sleep(3);?>
+            <script>
+                setTimeout(() => {
+                    window.location.href = "?cpu=1";
+                }, 3000);
+            </script>
         <?php endif;?>
         <hr>
         <h3>Log de Batalha</h3>

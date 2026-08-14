@@ -7,7 +7,7 @@
 </head>
 <body>
     <div>
-        <form action="stats.php" method="post">
+        <form action="combat.php" method="post">
          Nome do Personagem (Opcional):<br>   
         <input type="text" placeholder="Davi Jones" name="charName"/><br>
         Classe do Personagem:<br>
