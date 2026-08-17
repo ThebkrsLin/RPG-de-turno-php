@@ -17,7 +17,7 @@
             <form action="combat.php" method="post">
                 <div class="form-group">
                     <label for="charName">Nome do Personagem (opcional)</label>
-                    <input type="text" id="charName" placeholder="Davi Jones" name="charName" />
+                    <input type="text" id="charName" placeholder="Barry" name="charName" />
                 </div>
 
                 <div class="form-group">

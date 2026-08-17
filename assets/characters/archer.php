@@ -6,18 +6,18 @@ class Archer extends Character{
 
     public function __construct($n)
     {
-        parent::__construct(95, 45, 16, 9, 10);
+        parent::__construct(95, 60, 16, 9, 10);
         $this->setName($n);
+        $this->setEnergyRequired(20);
     }
 
     public function useAbillity(Character $target){
         $this->canAct();
-        $r = 10;
-        
-        $this->ep -= $r;
-        if($this->ep < $r){
+        $this->ep -= $this->getEnergyRequired();
+        if($this->ep < $this->getEnergyRequired()){
             $this->disableAbillity = true;
         }
+
         $dmg = $this->attack * 1.8;
         $target->RecieveDamage($dmg);
         return $dmg;

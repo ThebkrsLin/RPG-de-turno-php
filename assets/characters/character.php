@@ -15,6 +15,8 @@ abstract class Character implements Hittable{
     protected $level;
     protected $buffTurnsLimit;
     protected $disableAbillity;
+    protected $rechargeTick;
+    protected $energyRequired;
 
     public function __construct($mHp, $maxEP, $att, $def, $ini){
         $this->setMaxHp($mHp);
@@ -29,6 +31,7 @@ abstract class Character implements Hittable{
         $this->setLevel(1);
         $this->setAttackBuff(0);
         $this->setDefenseBuff(0);
+        $this->setRechargeTick(0);
         $this->inventory = [];
         $this->disableAbillity = false;
     }
@@ -55,6 +58,7 @@ abstract class Character implements Hittable{
         $this->hp = $this->maxHp;
         $this->ep = $this->maxep;
         $this->deafaultWeapon->setWeaponDuration($this->deafaultWeapon->getMaxDuration());
+        $this->disableAbillity = false;
     }
 
     public function Heal($v){
@@ -91,17 +95,38 @@ abstract class Character implements Hittable{
         $this->ep -= $energy;
     }
 
+    public function rechargeEP(){
+        $this->ep = min($this->getMaxep(), $this->getEp()+10);
+        if($this->getEp() >= $this->getEnergyRequired()){
+            $this->disableAbillity = false;
+        }
+    }
+
+    public function rechargeEPTick(){
+        if($this->getEp() < $this->getMaxep()){
+            if(!$this->getRechargeTick() % 5 == 0){
+                $this->rechargeTick++;
+            }
+
+            else{
+                $this->setRechargeTick(0);
+                $this->rechargeEP();
+            }
+        }
+    }
+
     public function RecieveDamage(float $dmg){
         $attackerDmg = max(0, $dmg - ($this->defense+$this->defenseBuff));
-        $this->hp = max(0, $this->hp - $attackerDmg);
+        if($attackerDmg > 0){
+            $this->hp = max(0, $this->hp - $attackerDmg);
+        }
+        
     }
 
     public function Attack(Character $target){
-        if($this->canAct()){
-            $dmg = $this->attack + $this->attackBuff;
-            $target->RecieveDamage($dmg);
-        }
-        return 0;
+        $dmg = $this->attack + $this->attackBuff;
+        $target->RecieveDamage($dmg);
+        return $dmg;
     }
 
     public function AttackWithWeapon(Character $target){
@@ -242,5 +267,35 @@ abstract class Character implements Hittable{
 
     public function getDisableAbillity(){
         return $this->disableAbillity;
+    }
+
+    /**
+     * Get the value of rechargeTick
+     */
+    public function getRechargeTick() {
+        return $this->rechargeTick;
+    }
+
+    /**
+     * Set the value of rechargeTick
+     */
+    public function setRechargeTick($rechargeTick): self {
+        $this->rechargeTick = $rechargeTick;
+        return $this;
+    }
+
+    /**
+     * Get the value of energyRequired
+     */
+    public function getEnergyRequired() {
+        return $this->energyRequired;
+    }
+
+    /**
+     * Set the value of energyRequired
+     */
+    public function setEnergyRequired($energyRequired): self {
+        $this->energyRequired = $energyRequired;
+        return $this;
     }
 }

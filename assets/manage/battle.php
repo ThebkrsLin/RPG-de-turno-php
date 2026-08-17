@@ -77,11 +77,8 @@ class Battle{
             $controller = $this->controllers['cpu'];
         }
 
-        if($this->turnCount % 10 == 0){
-            $this->rechargeEP();
-        }
-
         $current->buffTick();
+        $current->rechargeEPTick();
         $target = $this->getOponnent($current);
         #$controller->decideAction($current, $target);
         $result = $controller->decideAction($current, $target);
@@ -96,13 +93,6 @@ class Battle{
         }
 
         $this->advanceTurn();
-    }
-
-    public function rechargeEP(){
-        $p = $this->fighters['player'];
-        $p->setEp(min($p->getMaxEp(), $p->getEp() + 10));
-        $c = $this->fighters['cpu'];
-        $c->setEp(min($c->getMaxEp(), $c->getEp()+10));
     }
 
     public function GrindCPU(){

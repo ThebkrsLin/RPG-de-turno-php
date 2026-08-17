@@ -6,18 +6,18 @@ class Mage extends Character{
     
     public function __construct($n)
     {
-        parent::__construct(80, 40, 10, 6, 16);
+        parent::__construct(80, 60, 10, 6, 16);
         $this->setName($n);
+        $this->setEnergyRequired(30);
     }
 
     public function useAbillity(Character $target){
         $this->canAct();
-        $r = 30;
-        $this->ep -= $r;
-        if($this->ep < $r){
+        $this->ep -= $this->getEnergyRequired();
+        if($this->ep < $this->getEnergyRequired()){
             $this->disableAbillity = true;
         }
-        $dmg = $this->attack * 3.8;
+        $dmg = $this->attack * 2.8;
         $target->RecieveDamage($dmg);
         return $dmg;
     }

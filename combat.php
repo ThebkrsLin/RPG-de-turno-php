@@ -28,9 +28,9 @@ session_start();
         ];
 
         $defaultWeapons = [
-            new Weapon("Espada do Crepusculo", 20, 5),
-            new Weapon("Cajado dos Eternos", 15, 10),
-            new Weapon("Arco de Flechas tripla", 10, 7)
+            new Weapon("Maxado do Crepuscolo", 10, 5),
+            new Weapon("Bastão Mágico", 15, 10),
+            new Weapon("Arco de Flechas tripla", 10, 5)
         ];
 
         if (isset($_GET['reset'])) {
@@ -79,7 +79,7 @@ session_start();
                     break;
             }
 
-            $player->addItem($itens[0]);
+            $player->addItem($itens[random_int(0, 2)]);
             $_SESSION['player'] = $player;
         } else {
             $player = $_SESSION['player'];
@@ -111,7 +111,6 @@ session_start();
 
             if ($player->getLevel() > $cpu->getLevel()) {
                 $battle->GrindCpu();
-                echo "A CPU upou de nível";
                 for ($i = 0; $i < 2; $i++) {
                     $cpu->addItem($itens[random_int(0, 2)]);
                 }
@@ -173,6 +172,7 @@ session_start();
                     <div class="ep-bar-fill" style="width: <?= $playerEpPct ?>%"></div>
                 </div>
                 <p class="ep-text"><?= $player->getEp() ?> / <?= $player->getMaxEp() ?> EP</p>
+                <p>Nível: <?= $player->getLevel(); ?></p>
             </div>
 
             <div class="status-card cpu">
@@ -182,6 +182,7 @@ session_start();
                     <div class="hp-bar-fill<?= $cpuPct <= 30 ? ' low' : '' ?>" style="width: <?= $cpuPct ?>%"></div>
                 </div>
                 <p class="hp-text"><?= $cpu->getHp() ?> / <?= $cpu->getMaxHp() ?> HP</p>
+                <p>Nível: <?= $cpu->getLevel(); ?></p>
             </div>
         </div>
 
@@ -218,9 +219,9 @@ session_start();
                         </button>
 
                         <?php if (!$player->getDisableAbillity()): ?>
-                            <button type="submit" name="pAction" value="abillity">Usar Habilidade</button>
+                            <button type="submit" name="pAction" value="abillity">Usar Habilidade (Custo: <?= $player->getEnergyRequired() ?>)</button>
                         <?php else: ?>
-                            <button type="submit" disabled>Usar Habilidade (sem energia)</button>
+                            <button type="submit" disabled>Usar Habilidade (sem energia) </button>
                         <?php endif; ?>
                     </div>
 
