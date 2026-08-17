@@ -3,7 +3,6 @@ require_once __dir__."/../interfaces/decideaction.php";
 require_once "item.php";
 class Player implements DecideAction{
     protected $playerTurn;
-    private $disableAbillity;
     private $disableInventory;
 
     #[Override]
@@ -36,23 +35,13 @@ class Player implements DecideAction{
             case "abillity":
                 $dmg = $user->useAbillity($target);
                 if($dmg){
-                    $this->disableAbillity = false;
                     return [
-                'message' => "{$user->getName()} usou a habilidade no {$target->getName()} causando " . round($dmg, 1) . " de dano",
-                'damage' => $dmg,
-                'item' => null,
-            ];
+                        'message' => "{$user->getName()} usou a habilidade no {$target->getName()} causando " . round($dmg, 1) . " de dano",
+                        'damage' => $dmg,
+                        'item' => null,
+                        ];
 
                     
-                }
-
-                else{
-                    $this->disableAbillity = true;
-                    return [
-                'message' => "{$user->getName()} está sem energia!!",
-                'damage' => $dmg,
-                'item' => null,
-            ];
                 }
 
             case "item":
@@ -81,10 +70,6 @@ class Player implements DecideAction{
                         ];
                 }
         }
-    }
-
-    public function getDisableAbillity(){
-        return $this->disableAbillity;
     }
 
     public function getDisableInventory() {

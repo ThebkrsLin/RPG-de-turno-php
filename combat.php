@@ -15,13 +15,13 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="css/battle_style.css">
+    <title>Batalha</title>
 </head>
 <body>
-    <div>
-        <a href="?reset=1">Reset de emergência</a>
+    <div class="container">
         <?php
-        $itens =[
+        $itens = [
             new Item("Poção de Cura", "Heal", 30),
             new Item("Encantamento Força", "DamageBuff", 15),
             new Item("Escudo Mágico", "DefenseBuff", 10)
@@ -33,8 +33,8 @@ session_start();
             new Weapon("Arco de Flechas tripla", 10, 7)
         ];
 
-        if(isset($_GET['reset'])){
-            if($_SESSION['battle']->getWinner() == $_SESSION['player']){
+        if (isset($_GET['reset'])) {
+            if ($_SESSION['battle']->getWinner() == $_SESSION['player']) {
                 $_SESSION['player']->LevelUp();
                 $_SESSION['player']->addItem($itens[random_int(0, 2)]);
                 echo "Você ganhou um item!!";
@@ -43,34 +43,29 @@ session_start();
             $_SESSION['player']->resetStats();
 
             unset($_SESSION['battle']);
-            header("Location: ".$_SERVER['PHP_SELF']);
+            header("Location: " . $_SERVER['PHP_SELF']);
             exit;
         }
 
-        if(isset($_GET['newchar'])){
+        if (isset($_GET['newchar'])) {
             session_unset();
             session_destroy();
             header("Location: index.php");
             exit;
         }
 
-        if(!isset($_SESSION['player'])){
-            /*
-            if(!isset($_POST['charName']) && !isset($_POST['charClass'])){
-
-            }*/
-
+        if (!isset($_SESSION['player'])) {
             $charName = isset($_POST['charName']) ? $_POST['charName'] : "Player";
             $pClass = isset($_POST['charClass']) ? $_POST['charClass'] : random_int(1, 3);
             $player = null;
 
-            switch($pClass){
+            switch ($pClass) {
                 case "Warrior":
                 case 1:
                     $player = new Warrior($charName);
                     $player->setDefaultWeapon($defaultWeapons[0]);
                     break;
-                
+
                 case "Mage":
                 case 2:
                     $player = new Mage($charName);
@@ -86,18 +81,15 @@ session_start();
 
             $player->addItem($itens[0]);
             $_SESSION['player'] = $player;
-
-        }
-
-        else{
+        } else {
             $player = $_SESSION['player'];
         }
 
-        if(!isset($_SESSION['battle']) && isset($_SESSION['player'])){
+        if (!isset($_SESSION['battle']) && isset($_SESSION['player'])) {
             $cpu = null;
             $cpuChoose = random_int(1, 3);
 
-            switch($cpuChoose){
+            switch ($cpuChoose) {
                 case 1:
                     $cpu = new Warrior("(CPU)");
                     $cpu->setDefaultWeapon($defaultWeapons[0]);
@@ -108,35 +100,30 @@ session_start();
                     $cpu->setDefaultWeapon($defaultWeapons[1]);
                     break;
 
-                case 3: 
+                case 3:
                     $cpu = new Archer("(CPU)");
                     $cpu->setDefaultWeapon($defaultWeapons[2]);
                     break;
             }
 
             $battle = new Battle();
-            #$_SESSION['player']->resetStats();
-            
-            
             $battle->addFighters($player, $cpu);
 
-            if($player->getLevel() > $cpu->getLevel()){
+            if ($player->getLevel() > $cpu->getLevel()) {
                 $battle->GrindCpu();
                 echo "A CPU upou de nível";
-                for($i = 0; $i < 2; $i++){
+                for ($i = 0; $i < 2; $i++) {
                     $cpu->addItem($itens[random_int(0, 2)]);
                 }
             }
 
             $_SESSION['battle'] = $battle;
-        }
-
-        else{
+        } else {
             $battle = $_SESSION['battle'];
         }
 
-        if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pAction']) && !$battle->isOver()){
-            if($battle->isPlayerTurn()){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pAction']) && !$battle->isOver()) {
+            if ($battle->isPlayerTurn()) {
                 $battle->playTurn();
             }
 
@@ -145,30 +132,18 @@ session_start();
             }
         }
 
-        if (isset($_GET['cpu']) && $_GET['cpu'] === '1' && ($_SESSION['cpuStep'] ?? null) === 'waiting'){
+        if (isset($_GET['cpu']) && $_GET['cpu'] === '1' && ($_SESSION['cpuStep'] ?? null) === 'waiting') {
             $_SESSION['cpuStep'] = 'result';
 
             if (!$battle->isOver() && !$battle->isPlayerTurn()) {
                 $battle->playTurn();
                 $_SESSION['battle'] = $battle;
             }
-
-            
-                
         }
 
-        if(isset($_GET['continue']) && $_GET['continue'] == 1 && ($_SESSION['cpuStep'] ?? null) == 'result'){
+        if (isset($_GET['continue']) && $_GET['continue'] == 1 && ($_SESSION['cpuStep'] ?? null) == 'result') {
             unset($_SESSION['cpuStep']);
         }
- 
-    
-
-
-        /*
-        if($_SERVER['REQUEST_METHOD'] === 'POST' && !$battle->isPlayerTurn() && !$battle->isOver()){
-            $battle->playturn();
-        }
-        */
 
         $_SESSION['battle'] = $battle;
 
@@ -182,101 +157,125 @@ session_start();
         $cpu = $fighters['cpu'];
         ?><br>
 
-        <!--Debug Session-->
-        <pre>
-            turnCount: <?= $battle->getTurnCount() ?>
-            isPlayerTurn: <?= var_export($battle->isPlayerTurn(), true) ?>
-            isOver: <?= var_export($battle->isOver(), true) ?>
-            POST recebido: <?= var_export($_POST, true) ?>
-            Order[0]: <?= $battle->getOrder()[0]->getName() ?>
-            Order[1]: <?= $battle->getOrder()[1]->getName() ?>
-            Player === Order[0]: <?= var_export($fighters['player'] === $battle->getOrder()[0], true) ?>
-            Player === Order[1]: <?= var_export($fighters['player'] === $battle->getOrder()[1], true) ?><br>
-            Player Items: <?= print_r($player) ?><br>
-            CPU Items: <?= print_r($cpu) ?>
-        </pre><br>
-        Player LVL : <?= $player->getLevel(); ?><br>
-        Player EP: <?= $player->getEp() ?><br>
-        CPU LVL: <?= $fighters['cpu']->getLevel();?><br>
-        CPU EP: <?= $cpu->getEp(); ?>
-
-        <!--Combat Session-->
+        <!-- Combat Session -->
         <h1>Combate</h1>
 
-        <div class="status">
-            <p><strong><?= htmlspecialchars($player->getName()) ?> HP: <?= $player->getHp();?></strong></p>
-            <p><strong><?= htmlspecialchars($cpu->getName())?> HP: <?= $cpu->getHp();?></strong></p>
+        <div class="status-grid">
+            <div class="status-card">
+                <h4><?= htmlspecialchars($player->getName()) ?></h4>
+                <?php $playerPct = max(0, min(100, ($player->getHp() / $player->getMaxHp()) * 100)); ?>
+                <div class="hp-bar">
+                    <div class="hp-bar-fill<?= $playerPct <= 30 ? ' low' : '' ?>" style="width: <?= $playerPct ?>%"></div>
+                </div>
+                <p class="hp-text"><?= $player->getHp() ?> / <?= $player->getMaxHp() ?> HP</p>
+                <?php $playerEpPct = max(0, min(100, ($player->getEp() / $player->getMaxEp()) * 100)); ?>
+                <div class="ep-bar">
+                    <div class="ep-bar-fill" style="width: <?= $playerEpPct ?>%"></div>
+                </div>
+                <p class="ep-text"><?= $player->getEp() ?> / <?= $player->getMaxEp() ?> EP</p>
+            </div>
+
+            <div class="status-card cpu">
+                <h4><?= htmlspecialchars($cpu->getName()) ?></h4>
+                <?php $cpuPct = max(0, min(100, ($cpu->getHp() / $cpu->getMaxHp()) * 100)); ?>
+                <div class="hp-bar">
+                    <div class="hp-bar-fill<?= $cpuPct <= 30 ? ' low' : '' ?>" style="width: <?= $cpuPct ?>%"></div>
+                </div>
+                <p class="hp-text"><?= $cpu->getHp() ?> / <?= $cpu->getMaxHp() ?> HP</p>
+            </div>
         </div>
 
-        <?php if($battle->isOver()): ?>
-            <h2>
+        <?php if ($battle->isOver()): ?>
+
+            <div class="victory-banner">
                 <?php $winner = $battle->getWinner(); ?>
-                <?=  $winner ? "Vencedor: ". htmlspecialchars($winner->getName()) : "Empate (limite de turnos atingido)"?>
-            </h2>
-            <a href="?reset=1">Jogar Novamente (mesmo personagem)</a><br>
-            <a href="?newchar=1">Criar um personagem novo</a>
-            <a href="generate_report.php" target="_blank">Baixar Relatorio em PDF</a>
+                <h2><?= $winner ? "Vencedor: " . htmlspecialchars($winner->getName()) : "Empate (limite de turnos atingido)" ?></h2>
+            </div>
 
-        <?php elseif($battle->isPlayerTurn()): ?>
-            <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
-                <button type="submit" name="pAction" value="attack">Atacar</button><br>
-                <?php
-                if($player->getDefaultWeapon()->getWeaponDuration() > 0){
-                    echo "<button type='submit' name='pAction' value='weapon'>{$player->getDefaultWeapon()->getName()}</button> ";
-                    
-                }
+            <div class="action-links">
+                <a href="?reset=1">Jogar Novamente (mesmo personagem)</a>
+                <a href="?newchar=1">Criar um personagem novo</a>
+                <a href="generate_report.php" target="_blank">Baixar Relatório em PDF</a>
+            </div>
 
-                else{
-                    printf('<button type="submit" disabled>Atacar com %s</button> ', $player->getDefaultWeapon()->getName());
-                }
-                
-                echo "Estado {$player->getDefaultWeapon()->getWeaponDuration()}<br>";
+        <?php elseif ($battle->isPlayerTurn()): ?>
 
-                if(!$battle->getControllers()['player']->getDisableAbillity()){
-                echo '<button type="submit" name="pAction" value="abillity">Usar Habilidade</button><br>';
-                }
+            <div class="card">
+                <p class="action-title">Sua vez de agir</p>
 
-                else{
-                    echo '<button type="submit" disabled>Usar Habilidade</button><br>';
-                }
+                <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
+                    <div class="action-buttons">
+                        <button type="submit" name="pAction" value="attack">Atacar</button>
 
-                if(!empty($player->getInventory())){
-                    echo "<p>Pode usar um item!!!!</p>";
-                    echo "Itens: ";
-                    echo "<select name='itemChoosed'>";
-                    foreach($player->getInventory() as $item){
-                        echo "<option value='{$item->getName()}'>{$item->getName()}</option>";
-                    }
-                    echo "</select>";
-                    echo "<button type='submit' name='pAction' value='item'>Usar item</button>";
-                }
+                        <?php
+                        $weapon = $player->getDefaultWeapon();
+                        $canUseWeapon = $weapon->getWeaponDuration() > 0;
+                        $isLowDurability = $weapon->getWeaponDuration() <= 2;
+                        ?>
+                        <button type="submit" name="pAction" value="weapon" class="weapon-btn" <?= $canUseWeapon ? '' : 'disabled' ?>>
+                            <span class="weapon-name">⚔️ <?= htmlspecialchars($weapon->getName()) ?></span>
+                            <span class="weapon-durability<?= $isLowDurability ? ' low' : '' ?>"><?= $weapon->getWeaponDuration() ?> usos</span>
+                        </button>
 
-                else{
-                    echo  "<p>Não possui itens</p>";
-                }
-                ?>
+                        <?php if (!$player->getDisableAbillity()): ?>
+                            <button type="submit" name="pAction" value="abillity">Usar Habilidade</button>
+                        <?php else: ?>
+                            <button type="submit" disabled>Usar Habilidade (sem energia)</button>
+                        <?php endif; ?>
+                    </div>
 
-            </form>
+                    <div class="item-section">
+                        <?php if (!empty($player->getInventory())): ?>
+                            <p class="action-title">Usar Item</p>
+                            <div class="item-row">
+                                <select name="itemChoosed">
+                                    <?php foreach ($player->getInventory() as $item): ?>
+                                        <option value="<?= htmlspecialchars($item->getName()) ?>"><?= htmlspecialchars($item->getName()) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="submit" name="pAction" value="item">Usar</button>
+                            </div>
+                        <?php else: ?>
+                            <p class="no-items">Você não possui itens</p>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
 
         <?php elseif ($cpuStep == 'waiting'): ?>
 
-            <p>Processando turno CPU</p>
+            <p class="cpu-waiting">Processando turno da CPU...</p>
             <script>
                 setTimeout(() => {
                     window.location.href = "?cpu=1";
                 }, 3000);
             </script>
-        <?php elseif($cpuStep == 'result'):?>   
-            <?php $lastEntry = $battle->getLog()->getLastEntry();?>
-            <p><?= htmlspecialchars($lastEntry)['message'] ?? ''; ?></p>
+
+        <?php elseif ($cpuStep == 'result'): ?>
+
+            <?php $lastEntry = $battle->getLog()->getLastEntry(); ?>
+            <p class="cpu-waiting"><?= htmlspecialchars($lastEntry['message'] ?? '') ?></p>
             <script>
                 setTimeout(() => window.location.href = '?continue=1', 1500);
             </script>
-        <?php endif;?>
-        <hr>
-        <h3>Log de Batalha</h3>
-        <?= $_SESSION['battle']->getLog()->render() ?>
+
+        <?php endif; ?>
+
+        <div class="card">
+            <h3>Log de Batalha</h3>
+            <div class="battle-log-wrapper" id="battleLogWrapper">
+                <?= $battle->getLog()->render() ?>
+            </div>
+        </div>
+
         <a href="?newchar=1">Voltar</a>
     </div>
+
+    <script>
+        const logWrapper = document.getElementById('battleLogWrapper');
+        if (logWrapper) {
+            logWrapper.scrollTop = logWrapper.scrollHeight;
+        }
+    </script>
 </body>
 </html>

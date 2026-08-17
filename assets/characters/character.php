@@ -14,6 +14,7 @@ abstract class Character implements Hittable{
     protected $deafaultWeapon;
     protected $level;
     protected $buffTurnsLimit;
+    protected $disableAbillity;
 
     public function __construct($mHp, $maxEP, $att, $def, $ini){
         $this->setMaxHp($mHp);
@@ -29,6 +30,7 @@ abstract class Character implements Hittable{
         $this->setAttackBuff(0);
         $this->setDefenseBuff(0);
         $this->inventory = [];
+        $this->disableAbillity = false;
     }
 
     public abstract function LevelUp();
@@ -236,5 +238,9 @@ abstract class Character implements Hittable{
     public function setDefenseBuff($defenseBuff): self {
         $this->defenseBuff = $defenseBuff;
         return $this;
+    }
+
+    public function getDisableAbillity(){
+        return $this->disableAbillity;
     }
 }

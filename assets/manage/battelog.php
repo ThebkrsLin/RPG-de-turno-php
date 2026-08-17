@@ -7,7 +7,6 @@ class Battlelog{
 
 
     public function __construct(){
-        echo "Log Criado";
         $this->entries = [];
         $this->stats = [];
     }

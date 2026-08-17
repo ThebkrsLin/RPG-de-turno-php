@@ -15,17 +15,14 @@ class Warrior extends Character{
     {
         $this->canAct();
         $r = 15;
+         
+        $this->ep -= $r;
         if($this->ep < $r){
-            echo $this->name." está sem energia, não poderá usar a habilidade<br>";
-            return false;
+            $this->disableAbillity = true;
         }
-        
-        else{   
-            $this->ep -= $r;
-            $dmg = $this->attack * 1.8;
-            $target->RecieveDamage($dmg);
-            return $dmg;
-        }
+        $dmg = $this->attack * 1.8;
+        $target->RecieveDamage($dmg);
+        return $dmg;
     }
 
     public function LevelUp(){

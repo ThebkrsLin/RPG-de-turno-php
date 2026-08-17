@@ -1,0 +1,438 @@
+/* =====================================================
+   RESET E BASE
+===================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: #f4f5f7;
+    color: #1f2933;
+    line-height: 1.5;
+    padding: 24px 16px;
+}
+
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #111827;
+}
+
+h2, h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #374151;
+}
+
+/* =====================================================
+   CARD GENÉRICO
+===================================================== */
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+
+/* =====================================================
+   STATUS (PLAYER / CPU)
+===================================================== */
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.status-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.status-card.cpu {
+    border-color: #fecaca;
+}
+
+.status-card h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+.hp-bar {
+    background: #e5e7eb;
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.hp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.hp-bar-fill.low {
+    background: linear-gradient(90deg, #f87171, #dc2626);
+}
+
+.hp-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.ep-bar {
+    background: #e5e7eb;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.ep-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #60a5fa, #2563eb);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.ep-text {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* =====================================================
+   BOTÕES E FORMULÁRIOS GERAIS
+===================================================== */
+button {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    margin: 4px 6px 4px 0;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+button:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+select {
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    margin-right: 8px;
+    background: #fff;
+}
+
+/* =====================================================
+   AÇÕES DO JOGADOR
+===================================================== */
+.action-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.action-buttons button {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.weapon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.weapon-btn .weapon-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.weapon-durability {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.25);
+    color: inherit;
+}
+
+.weapon-durability.low {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+button:disabled .weapon-durability {
+    background: #e5e7eb;
+    color: #9ca3af;
+}
+
+.item-section {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 14px;
+    margin-top: 4px;
+}
+
+.item-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.item-row select {
+    flex: 1;
+    margin: 0;
+}
+
+.item-row button {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.no-items {
+    color: #9ca3af;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* =====================================================
+   LOG DE BATALHA
+===================================================== */
+.battle-log-wrapper {
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    scroll-behavior: smooth;
+}
+
+.battle-log {
+    list-style: none;
+}
+
+.battle-log li {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #f1f2f4;
+    color: #374151;
+}
+
+.battle-log li:last-child {
+    border-bottom: none;
+}
+
+.battle-log li:nth-child(odd) {
+    background: #fafafa;
+}
+
+/* =====================================================
+   TELA DE VENCEDOR
+===================================================== */
+.victory-banner {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.victory-banner h2 {
+    color: #047857;
+    margin: 0;
+}
+
+.action-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.action-links a {
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    border-radius: 8px;
+    color: #1f2933;
+    font-weight: 500;
+    text-align: center;
+}
+
+.action-links a:hover {
+    background: #f3f4f6;
+}
+
+/* =====================================================
+   AGUARDANDO CPU
+===================================================== */
+.cpu-waiting {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* =====================================================
+   TELA DE CRIAÇÃO DE PERSONAGEM
+===================================================== */
+.creation-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.creation-header p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+}
+
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.class-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.class-option {
+    position: relative;
+}
+
+.class-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.class-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.class-option label .icon {
+    font-size: 1.6rem;
+}
+
+.class-option input[type="radio"]:checked + label {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    margin-top: 8px;
+}
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+@media (max-width: 480px) {
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 420px) {
+    .class-options {
+        grid-template-columns: 1fr;
+    }
+}

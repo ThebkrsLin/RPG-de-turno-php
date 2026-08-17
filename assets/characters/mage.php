@@ -13,17 +13,13 @@ class Mage extends Character{
     public function useAbillity(Character $target){
         $this->canAct();
         $r = 30;
+        $this->ep -= $r;
         if($this->ep < $r){
-           echo $this->name." está sem energia, não poderá usar a habilidade";
-           return false;
+            $this->disableAbillity = true;
         }
-        
-        else{   
-            $this->ep -= $r;
-            $dmg = $this->attack * 3.8;
-            $target->RecieveDamage($dmg);
-            return $dmg;
-        }
+        $dmg = $this->attack * 3.8;
+        $target->RecieveDamage($dmg);
+        return $dmg;
     }
 
     public function LevelUP(){
