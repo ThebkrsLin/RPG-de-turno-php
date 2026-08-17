@@ -7,7 +7,7 @@ class Player implements DecideAction{
     private $disableInventory;
 
     #[Override]
-    public function decideAction(Character $user, Character $target): String
+    public function decideAction(Character $user, Character $target): array
     {
         $action = $_POST['pAction'] ?? null;
         $itemChoosed = $_POST['itemChoosed'] ?? null;
@@ -15,39 +15,70 @@ class Player implements DecideAction{
 
         switch($action){
             case "attack":
-                $user->Attack($target);
-                return "{$user->getName()} atacou {$target->getName()}";
+                $dmg = $user->Attack($target);
+                return [
+                'message' => "{$user->getName()} atacou {$target->getName()} causando " . round($dmg, 1) . " de dano",
+                'damage' => $dmg,
+                'item' => null,
+            ];
+
 
             case "weapon":
                 $user->getDefaultWeapon()->weaponTick();
-                $user->AttackWithWeapon($target);
-                return "{$user->getName()} atacou o {$target->getName()}com uma {$user->getDefaultWeapon()->getName()}";
+                $dmg = $user->AttackWithWeapon($target);
+                return [
+                'message' => "{$user->getName()} atacou {$target->getName()} usando {$user->getDefaultWeapon()->getName()}   causando " . round($dmg, 1) . " de dano",
+                'damage' => $dmg,
+                'item' => null,
+            ];
+
 
             case "abillity":
-                if($user->useAbillity($target)){
+                $dmg = $user->useAbillity($target);
+                if($dmg){
                     $this->disableAbillity = false;
-                    return "{$user->getName()} usou uma Habilidade na {$target->getName()}";
+                    return [
+                'message' => "{$user->getName()} usou a habilidade no {$target->getName()} causando " . round($dmg, 1) . " de dano",
+                'damage' => $dmg,
+                'item' => null,
+            ];
+
                     
                 }
 
                 else{
                     $this->disableAbillity = true;
-                    return "{$user->getName()} está sem energia";
+                    return [
+                'message' => "{$user->getName()} está sem energia!!",
+                'damage' => $dmg,
+                'item' => null,
+            ];
                 }
 
             case "item":
                 $inventory = $user->getInventory();
-                $inventory[$itemChoosed]->useItem($user);
-
+                $dmg = $inventory[$itemChoosed]->useItem($user);
                 switch($itemChoosed){
                     case "Poção de Cura":
-                        return "{$user->getName()} usou {$itemChoosed} e curou 30 de hp";
+                        return [
+                        'message' => "{$user->getName()} usou {$itemChoosed} e curou 30 de hp",
+                        'damage' => $dmg,
+                        'item' => $itemChoosed,
+                        ];
 
                     case "Encantamento Força":
-                        return "{$user->getName()} usou {$itemChoosed} e aumentou o dano do ataque";
+                        return [
+                        'message' => "{$user->getName()} usou {$itemChoosed} e aumentou o dano do ataque",
+                        'damage' => $dmg,
+                        'item' => $itemChoosed,
+                        ];
 
                     case "Escudo Mágico":
-                        return "{$user->getName()} usou {$itemChoosed} e aumentou a defesa";
+                        return [
+                        'message' => "{$user->getName()} usou {$itemChoosed} e aumentou a defesa",
+                        'damage' => $dmg,
+                        'item' => $itemChoosed,
+                        ];
                 }
         }
     }

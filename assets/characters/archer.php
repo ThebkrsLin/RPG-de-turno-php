@@ -6,7 +6,7 @@ class Archer extends Character{
 
     public function __construct($n)
     {
-        parent::__construct(95, 45, 16, 9, 20);
+        parent::__construct(95, 45, 16, 9, 10);
         $this->setName($n);
     }
 
@@ -18,11 +18,10 @@ class Archer extends Character{
             return false;
         }
         
-        else{   
-            $this->ep -= $r;
-            $target->RecieveDamage($this->attack * 1.8);
-            return true;
-        }
+        $this->ep -= $r;
+        $dmg = $this->attack * 1.8;
+        $target->RecieveDamage($dmg);
+        return $dmg;
     }
 
     public function LevelUp(){

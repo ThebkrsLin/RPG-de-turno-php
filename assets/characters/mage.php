@@ -20,8 +20,9 @@ class Mage extends Character{
         
         else{   
             $this->ep -= $r;
-            $target->RecieveDamage($this->attack * 3.8);
-            return true;
+            $dmg = $this->attack * 3.8;
+            $target->RecieveDamage($dmg);
+            return $dmg;
         }
     }
 

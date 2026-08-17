@@ -96,15 +96,20 @@ abstract class Character implements Hittable{
 
     public function Attack(Character $target){
         if($this->canAct()){
-            $target->RecieveDamage($this->attack + $this->attackBuff);
+            $dmg = $this->attack + $this->attackBuff;
+            $target->RecieveDamage($dmg);
         }
+        return 0;
     }
 
     public function AttackWithWeapon(Character $target){
         if($this->canAct()){
             $bonusDmg = $this->deafaultWeapon->getAdditionalDamage();
-            $target->RecieveDamage($this->getAttack()+$bonusDmg);
+            $dmg = ($this->getAttack()+$bonusDmg);
+            $target->RecieveDamage($dmg);
+            return $dmg;
         }
+        return 0;
     }
 
     public function addItem(Item $item){

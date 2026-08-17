@@ -6,7 +6,7 @@ class Warrior extends Character{
 
     public function __construct($n)
     {
-        parent::__construct(120, 30, 18, 13, 9);
+        parent::__construct(120, 30, 18, 13, 7);
         $this->setName($n);
     }
 
@@ -22,8 +22,9 @@ class Warrior extends Character{
         
         else{   
             $this->ep -= $r;
-            $target->RecieveDamage($this->attack * 1.8);
-            return true;
+            $dmg = $this->attack * 1.8;
+            $target->RecieveDamage($dmg);
+            return $dmg;
         }
     }
 

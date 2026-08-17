@@ -17,7 +17,8 @@
             <option value="Archer">Arqueiro</option>
         </select><br>
         <input type="submit" value="Criar Personagem"/><br>
-        </form>
+        </form><br>
+        <a href="pdftest.php">Testar pdf</a>
     </div>
 </body>
 </html>

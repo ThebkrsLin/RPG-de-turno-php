@@ -1,10 +1,9 @@
 <?php
 
-use Random\Randomizer;
 require_once __DIR__."/../interfaces/decideaction.php";
 class CPU implements DecideAction{
 
-	public function decideAction(Character $user, Character $target): String
+	public function decideAction(Character $user, Character $target): array
     {
         if(!empty($user->getInventory())){
             $action = random_int(1, 4);
@@ -17,41 +16,82 @@ class CPU implements DecideAction{
         
         switch($action){
             case 1:
-                $user->Attack($target);
-                return "{$user->getName()} Atacou {$target->getName()}";
+                $dmg = $user->Attack($target);
+                return [
+                        'message' => "{$user->getName()} Atacou {$target->getName()} causando ". round($dmg, 1)." de dano",
+                        'damage' => $dmg,
+                        'item' => null,
+                        ];
 
             case 2:
-                $user->useAbillity($target); 
-                return "{$user->getName()} usou uma habilidade no player";
+                $dmg = $user->useAbillity($target); 
+                return [
+                        'message' => "{$user->getName()} usou uma habilidade no {$target->getName()} causando ".round($dmg, 1)." de Dano",
+                        'damage' => $dmg,
+                        'item' => null,
+                        ];
 
             case 3:
-                $user->AttackWithWeapon($target);
-                return "{$user->getName()} atacou {$target->getName()} com {$user->getDefaultWeapon()->getName()}";
+                $dmg = $user->AttackWithWeapon($target);
+                return [
+                        'message' => "{$user->getName()} atacou {$target->getName()} usando {$user->getDefaultWeapon()->getName()} causando ".round($dmg, 1)." de dano",
+                        'damage' => $dmg,
+                        'item' => null,
+                        ];
 
             case 4:
 
                 $inventory = $user->getInventory();
 
                 #fazer a cpu ter a preferência de se curar quando estiver, com pouca vida
-                if(array_key_exists("Poção de Cura", $inventory)){
+                if(array_key_exists("Poção de Cura", $inventory) && $user->getHp() < $user->getMaxHp()){
                     $inventory["Poção de Cura"]->useItem($user);
-                    return "{$user->getName()} usou Poção de Cura e curou 30 de hp";
+                    return [
+                        'message' => "{$user->getName()} usou Poção de Cura e curou 30 de hp",
+                        'damage' => 0,
+                        'item' => $inventory["Poção de Cura"]->getName(),
+                        ];
                 }
 
                 $itemChoose = array_rand($inventory);
-                $inventory[$itemChoose]->useItem($user);
-                
                 echo "Usou {$itemChoose}";
 
                 switch($itemChoose){
                     case "Poção de Cura":
-                        return "{$user->getName()} usou {$itemChoose} e curou 30 de hp";
+                        if($user->getHp() < $user->getMaxHp()){
+                            $inventory[$itemChoose]->useItem($user);
+                            return [
+                            'message' => "{$user->getName()} usou {$itemChoose} e curou 30 de hp",
+                            'damage' => 0,
+                            'item' => $itemChoose,
+                            ];
+                        }
+                        
+                        else{
+                            $dmg = $user->Attack($target);
+                            return [
+                                'message' => "{$user->getName()} Atacou {$target->getName()} causando ". round($dmg, 1)." de dano",
+                                'damage' => $dmg,
+                                'item' => null,
+                            ];
+
+                        }
 
                     case "Encantamento Força":
-                        return "{$user->getName()} usou {$itemChoose} e aumentou 20 de dano";
+                        $inventory[$itemChoose]->useItem($user);
+                        return [
+                        'message' => "{$user->getName()} usou {$itemChoose} e aumentou 20 de dano nos seus ataques",
+                        'damage' => 0,
+                        'item' => $itemChoose,
+                        ];
 
                     case "Escudo Mágico":
-                        return "{$user->getName()} usou {$itemChoose} e aumentou a defesa em 10";
+                        $inventory[$itemChoose]->useItem($user);
+                        return [
+                        'message' => "{$user->getName()} usou {$itemChoose} e aumentou a defesa em 10",
+                        'damage' => 0,
+                        'item' => $itemChoose,
+                        ];
 
                 }
         }

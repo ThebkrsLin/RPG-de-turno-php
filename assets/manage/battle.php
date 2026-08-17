@@ -84,22 +84,25 @@ class Battle{
         $current->buffTick();
         $target = $this->getOponnent($current);
         #$controller->decideAction($current, $target);
-        $message = $controller->decideAction($current, $target);
-        $this->log->register($message);
+        $result = $controller->decideAction($current, $target);
+        $this->log->register($result["message"]);
+
+        if($result["damage"] > 0){
+            $this->log->registerDamage($current->getName(), $result['damage']);
+        }
+
+        if($result["item"] != null){
+            $this->log->registeritemUsed($current->getName(), $result["item"]);
+        }
+
         $this->advanceTurn();
     }
 
     public function rechargeEP(){
         $p = $this->fighters['player'];
-        $p->setEp(max($p->getMaxEp(), $p->getEp() + 10));
+        $p->setEp(min($p->getMaxEp(), $p->getEp() + 10));
         $c = $this->fighters['cpu'];
-        $c->setEp(max($c->getMaxEp(), $c->getEp()+10));
-    }
-
-    public function disableBuffs(){
-        $p = $this->fighters['player'];
-        $p->setAttack($p->getLastAttack());
-        $p->setDefense($p->getLastDefense());
+        $c->setEp(min($c->getMaxEp(), $c->getEp()+10));
     }
 
     public function GrindCPU(){

@@ -23,8 +23,8 @@ session_start();
         <?php
         $itens =[
             new Item("Poção de Cura", "Heal", 30),
-            new Item("Encantamento Força", "damageBuff", 15),
-            new Item("Escudo Mágico", "defenseBuff", 10)
+            new Item("Encantamento Força", "DamageBuff", 15),
+            new Item("Escudo Mágico", "DefenseBuff", 10)
         ];
 
         $defaultWeapons = [
@@ -116,15 +116,16 @@ session_start();
 
             $battle = new Battle();
             #$_SESSION['player']->resetStats();
-            for($i = 0; $i < 3; $i++){
-                $cpu->addItem($itens[random_int(0, 2)]);
-            }
+            
             
             $battle->addFighters($player, $cpu);
 
             if($player->getLevel() > $cpu->getLevel()){
                 $battle->GrindCpu();
                 echo "A CPU upou de nível";
+                for($i = 0; $i < 2; $i++){
+                    $cpu->addItem($itens[random_int(0, 2)]);
+                }
             }
 
             $_SESSION['battle'] = $battle;
@@ -145,12 +146,19 @@ session_start();
         }
 
         if (isset($_GET['cpu']) && $_GET['cpu'] === '1' && ($_SESSION['cpuStep'] ?? null) === 'waiting'){
-            unset($_SESSION['cpuStep']);
+            $_SESSION['cpuStep'] = 'result';
 
             if (!$battle->isOver() && !$battle->isPlayerTurn()) {
                 $battle->playTurn();
                 $_SESSION['battle'] = $battle;
-            }   
+            }
+
+            
+                
+        }
+
+        if(isset($_GET['continue']) && $_GET['continue'] == 1 && ($_SESSION['cpuStep'] ?? null) == 'result'){
+            unset($_SESSION['cpuStep']);
         }
  
     
@@ -164,7 +172,11 @@ session_start();
 
         $_SESSION['battle'] = $battle;
 
-        $cpuWaiting = ($_SESSION['cpuStep'] ?? null) === 'waiting';
+        if (!$battle->isOver() && !$battle->isPlayerTurn() && !isset($_SESSION['cpuStep'])) {
+            $_SESSION['cpuStep'] = 'waiting';
+        }
+
+        $cpuStep = $_SESSION['cpuStep'] ?? null;
         $fighters = $battle->getFighters();
         $player = $fighters['player'];
         $cpu = $fighters['cpu'];
@@ -203,9 +215,10 @@ session_start();
             </h2>
             <a href="?reset=1">Jogar Novamente (mesmo personagem)</a><br>
             <a href="?newchar=1">Criar um personagem novo</a>
+            <a href="generate_report.php" target="_blank">Baixar Relatorio em PDF</a>
 
         <?php elseif($battle->isPlayerTurn()): ?>
-            <form method="POST">
+            <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
                 <button type="submit" name="pAction" value="attack">Atacar</button><br>
                 <?php
                 if($player->getDefaultWeapon()->getWeaponDuration() > 0){
@@ -245,13 +258,19 @@ session_start();
 
             </form>
 
-        <?php elseif ($cpuWaiting): ?>
+        <?php elseif ($cpuStep == 'waiting'): ?>
 
             <p>Processando turno CPU</p>
             <script>
                 setTimeout(() => {
                     window.location.href = "?cpu=1";
                 }, 3000);
+            </script>
+        <?php elseif($cpuStep == 'result'):?>   
+            <?php $lastEntry = $battle->getLog()->getLastEntry();?>
+            <p><?= htmlspecialchars($lastEntry)['message'] ?? ''; ?></p>
+            <script>
+                setTimeout(() => window.location.href = '?continue=1', 1500);
             </script>
         <?php endif;?>
         <hr>
